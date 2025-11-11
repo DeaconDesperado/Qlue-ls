@@ -38,9 +38,9 @@ use workspace::handle_workspace_edit_response;
 
 pub use formatting::format_raw;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(feature = "wasm", target_arch = "wasm32")))]
 use tokio::task::spawn_local;
-#[cfg(target_arch = "wasm32")]
+#[cfg(any(feature = "wasm", target_arch = "wasm32"))]
 use wasm_bindgen_futures::spawn_local;
 
 use crate::server::{
@@ -96,7 +96,7 @@ pub(super) async fn dispatch(
                     handle_error(server_rc, &message_copy, err).await;
                 }
             });
-            #[cfg(not(target_arch = "wasm32"))]
+            #[cfg(not(any(feature = "wasm", target_arch = "wasm32")))]
             task.await.expect("local task should not crash");
             Ok(())
         }};
