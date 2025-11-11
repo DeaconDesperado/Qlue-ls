@@ -3,7 +3,7 @@ mod sparql;
 
 pub use server::format_raw;
 
-#[cfg(any(feature = "wasm", target_arch = "wasm32"))]
+#[cfg(target_arch = "wasm32")]
 mod wasm_impl {
     use std::panic;
     use std::rc::Rc;

@@ -18,7 +18,8 @@ path = "src/main.rs"
 
 [features]
 default = []
-# Optional feature to enable WASM support on non-WASM targets (for testing/development)
+# WASM feature - kept for compatibility but not used in code
+# The code uses target_arch = "wasm32" directly instead
 wasm = [
 	"dep:wasm-bindgen",
 	"dep:wasm-logger",

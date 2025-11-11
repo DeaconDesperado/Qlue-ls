@@ -32,7 +32,7 @@ use serde::Serialize;
 use state::ServerState;
 use tools::Tools;
 
-#[cfg(any(feature = "wasm", target_arch = "wasm32"))]
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::server::{
@@ -40,7 +40,7 @@ use crate::server::{
     tracing::log_trace,
 };
 
-#[cfg_attr(any(feature = "wasm", target_arch = "wasm32"), wasm_bindgen)]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct Server {
     pub(crate) state: ServerState,
     pub(crate) settings: Settings,

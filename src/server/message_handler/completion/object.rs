@@ -11,9 +11,9 @@ use ll_sparql_parser::ast::AstNode;
 use std::rc::Rc;
 use tera::Context;
 
-#[cfg(not(any(feature = "wasm", target_arch = "wasm32")))]
+#[cfg(not(target_arch = "wasm32"))]
 use tokio::task::spawn_local;
-#[cfg(any(feature = "wasm", target_arch = "wasm32"))]
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen_futures::spawn_local;
 
 pub(super) async fn completions(
