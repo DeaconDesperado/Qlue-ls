@@ -2,9 +2,9 @@ use std::{collections::HashMap, fmt::Debug, rc::Rc};
 
 use futures::lock::Mutex;
 use serde::Serialize;
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(feature = "wasm", target_arch = "wasm32")))]
 use tokio::task::spawn_local;
-#[cfg(target_arch = "wasm32")]
+#[cfg(any(feature = "wasm", target_arch = "wasm32"))]
 use wasm_bindgen_futures::spawn_local;
 
 use crate::server::lsp::LspMessage;

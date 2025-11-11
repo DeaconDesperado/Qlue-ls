@@ -11,6 +11,8 @@ use crate::server::{
 use core::*;
 use futures::lock::Mutex;
 use std::rc::Rc;
+
+#[cfg(any(feature = "wasm", target_arch = "wasm32"))]
 use wasm_bindgen::prelude::wasm_bindgen;
 
 pub(super) async fn handle_format_request(
@@ -23,7 +25,7 @@ pub(super) async fn handle_format_request(
     server.send_message(FormattingResponse::new(request.get_id(), edits))
 }
 
-#[wasm_bindgen]
+#[cfg_attr(any(feature = "wasm", target_arch = "wasm32"), wasm_bindgen)]
 pub fn format_raw(text: String) -> Result<String, String> {
     let settings = Settings::new();
     let mut document = TextDocumentItem::new("tmp", &text);

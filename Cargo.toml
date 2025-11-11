@@ -17,8 +17,18 @@ name = "qlue-ls"
 path = "src/main.rs"
 
 [features]
-default = ["console_error_panic_hook"]
-console_error_panic_hook = ["dep:console_error_panic_hook"]
+default = []
+# Optional feature to enable WASM support on non-WASM targets (for testing/development)
+wasm = [
+	"dep:wasm-bindgen",
+	"dep:wasm-logger",
+	"dep:wasm-bindgen-futures",
+	"dep:web-sys",
+	"dep:js-sys",
+	"dep:console_error_panic_hook",
+	"dep:getrandom",
+	"dep:serde-wasm-bindgen",
+]
 
 [dependencies]
 # logging
@@ -50,10 +60,41 @@ indoc = "2.0.5"
 config = "0.15.0"
 notify = "8.0.0"
 text-size = "1.1.1"
+futures = "0.3.31"
+regex = "1.11.1"
+urlencoding = "2.1.3"
+unicode-width = "0.2.1"
 
-# WASM
+# WASM dependencies - optional, but automatically enabled when targeting wasm32
+wasm-bindgen = { version = "0.2.95", optional = true }
+wasm-logger = { version = "0.2.0", optional = true }
+wasm-bindgen-futures = { version = "0.4.50", optional = true }
+web-sys = { version = "0.3.76", optional = true, features = [
+	"ReadableStream",
+	"ReadableStreamDefaultReader",
+	"WritableStream",
+	"WritableStreamDefaultWriter",
+	"Window",
+	"Request",
+	"Response",
+	"RequestInit",
+	"RequestMode",
+	"Headers",
+	"WorkerGlobalScope",
+	"AbortSignal",
+	"Performance",
+] }
+js-sys = { version = "0.3.77", optional = true }
+console_error_panic_hook = { version = "0.1.7", optional = true }
+getrandom = { version = "0.3", optional = true, features = ["wasm_js"] }
+serde-wasm-bindgen = { version = "0.6.5", optional = true }
+
+# Auto-enable wasm feature when targeting wasm32
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+# This forces the wasm dependencies to be included when compiling for wasm32
+# We reference them here so cargo knows to enable them for this target
 wasm-bindgen = "0.2.95"
-wasm-logger = { version = "0.2.0" }
+wasm-logger = "0.2.0"
 wasm-bindgen-futures = "0.4.50"
 web-sys = { version = "0.3.76", features = [
 	"ReadableStream",
@@ -71,21 +112,14 @@ web-sys = { version = "0.3.76", features = [
 	"Performance",
 ] }
 js-sys = "0.3.77"
-console_error_panic_hook = { version = "0.1.7", optional = true }
+console_error_panic_hook = "0.1.7"
 getrandom = { version = "0.3", features = ["wasm_js"] }
 serde-wasm-bindgen = "0.6.5"
-futures = "0.3.31"
-reqwest = { version = "0.12.15", features = ["json"] }
-regex = "1.11.1"
-urlencoding = "2.1.3"
-unicode-width = "0.2.1"
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
 log4rs = { version = "1.3.0" }
 tokio = { version = "1.44.1", features = ["full"] }
-
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = false
+reqwest = { version = "0.12.15", features = ["json"] }
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.
