@@ -8,6 +8,9 @@ declare global {
         // interface PageState {}
         // interface Platform {}
     }
+
+    // Version constant injected by Vite
+    const __QLUE_LS_VERSION__: string;
 }
 
 export {};

@@ -34,7 +34,7 @@
         await wrapper.initAndStart(wrapperConfig);
         ready = true;
         languageClientWrapper = wrapper.getLanguageClientWrapper('sparql')!;
-        version = languageClientWrapper?.getLanguageClient()?.initializeResult?.serverInfo?.version;
+        version = __QLUE_LS_VERSION__;
         let editor = wrapper.getEditor()!;
 
         initVimMode(editor, document.getElementById('status'));
