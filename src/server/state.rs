@@ -127,12 +127,26 @@ impl ServerState {
             ErrorCode::InvalidParams,
             &format!("Could not change unknown document {}", uri),
         ))?;
-        document.apply_text_edits(
-            content_changes
-                .into_iter()
-                .map(TextEdit::from_text_document_content_change_event)
-                .collect::<Vec<TextEdit>>(),
-        );
+
+        let edits: Vec<TextEdit> = content_changes
+            .into_iter()
+            .map(TextEdit::from_text_document_content_change_event)
+            .collect();
+
+        // Log incoming edits for debugging
+        if !edits.is_empty() {
+            log::debug!(
+                "Applying {} edit(s) to document version {}. Current doc has {} lines.",
+                edits.len(),
+                document.version(),
+                document.text.lines().count()
+            );
+            for (i, edit) in edits.iter().enumerate() {
+                log::debug!("  Edit {}: {}", i, edit);
+            }
+        }
+
+        document.apply_text_edits(edits);
         document.increase_version();
         Ok(())
     }

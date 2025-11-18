@@ -34,7 +34,12 @@ impl TextDocumentItem {
                 );
             }
             None => {
-                error!("Received textdocument/didChange notification with a TextEdit thats out ouf bounds:\nedit: {}\ndocument range: {}",text_edit, self.get_full_range());
+                error!(
+                    "Received textdocument/didChange notification with a TextEdit \
+                    out ouf bounds:\nedit: {}\ndocument range: {}",
+                    text_edit,
+                    self.get_full_range()
+                );
             }
         };
 
@@ -53,6 +58,7 @@ impl TextDocumentItem {
                 .cmp(&a.range.start)
                 .then_with(|| b.range.end.cmp(&a.range.end))
         });
+
         let mut line_breaks: Vec<usize> = Vec::new();
         let mut utf_16_counter = 0;
         for char in self.text.chars() {
@@ -75,7 +81,23 @@ impl TextDocumentItem {
         let chars: Vec<char> = self.text.chars().collect();
         let mut char_offset = chars.len();
         while let Some(edit) = edits.peek() {
-            assert!(edit.range.start <= position);
+            // Validate that edit.range.start hasn't gone past our current position
+            // This should never happen with properly sorted edits, but we handle it gracefully
+            if edit.range.start > position {
+                error!(
+                    "Skipping edit with start position {} ahead of current position {}. \
+                    Edit: {}\nDocument length: {}\nByte offset: {}\nChar offset: {}\n",
+                    edit.range.start,
+                    position,
+                    edit,
+                    self.text.len(),
+                    byte_offset,
+                    char_offset
+                );
+                edits.next();
+                continue;
+            }
+
             if edit.range.end == position {
                 current_edit_end_byte_offset = byte_offset;
             }
